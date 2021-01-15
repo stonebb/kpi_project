@@ -109,7 +109,7 @@ def model_detect_pipeline_fw(df_concat_kpi, city, save_out=True):
 
 	results_fw = Parallel(n_jobs=-1)(delayed(detect_fw)(name) for name in tqdm(cell_list_fw))
 	model_label_fw = pd.concat(results_fw)
-	# model_label_fw.to_csv('/home/share/ch/移动设计院/data/小区KPI/model_label_fw3.csv',index=False,encoding='utf_8_sig')
+	# model_label_fw.to_csv('/home/share/ch/data/小区KPI/model_label_fw3.csv',index=False,encoding='utf_8_sig')
 
 	df_concat_kpi_f_3 = df_concat_kpi_f[df_concat_kpi_f.开始时间 >(df_concat_kpi_f.开始时间.max()-datetime.timedelta(days=3))]
 	df_concat_kpi_fw = df_concat_kpi_f_3.pivot_table(index=["小区名称"], columns="开始时间", values="上行流量(KByte)")
@@ -144,7 +144,7 @@ def model_detect_pipeline_fw(df_concat_kpi, city, save_out=True):
 	        return None
 	results_fw_zero = Parallel(n_jobs=-1)(delayed(select_zero)(name) for name in tqdm(df_0label_kpi_fw_T.columns))
 	results_fw_zero_df = pd.concat([re for re in results_fw_zero if re is not None])
-	# results_fw_zero_df.to_csv('/home/share/ch/移动设计院/data/小区KPI/zero_label_fw3.csv',index=False,encoding='utf_8_sig')
+	# results_fw_zero_df.to_csv('/home/share/data/小区KPI/zero_label_fw3.csv',index=False,encoding='utf_8_sig')
 
 
 	df_concat_kpi_f['weekday'] = df_concat_kpi_f.开始时间.apply(lambda x: x.weekday())
@@ -161,13 +161,13 @@ def model_detect_pipeline_fw(df_concat_kpi, city, save_out=True):
 	df_concat_kpi_f_jump['fw_label'] = df_concat_kpi_f_jump.apply(lambda x: three_sigma_fw(x), axis=1)
 	df_concat_kpi_f_jump.to_csv('/home/share/ch/移动设计院/data/小区KPI/上行流量_label_{}.csv'.format(city), index=False, encoding='utf_8_sig')
 
-	# model_label_fw=pd.read_csv('/home/share/ch/移动设计院/data/小区KPI/model_label_fw3.csv')
+	# model_label_fw=pd.read_csv('/home/share/data/小区KPI/model_label_fw3.csv')
 
 	model_label_fw=model_label_fw.rename(columns={'timestamp':'开始时间','cell':'小区名称'})
 	model_label_fw['lable_model']=1
 	df_concat_kpi_f_jump=pd.merge(df_concat_kpi_f_jump[['小区名称','所属地市','开始时间','上行流量(KByte)','mean_hour','std_hour','fw_label']].astype(str),model_label_fw[['开始时间', '小区名称', 'lable_model']].astype(str),on=['开始时间', '小区名称'],how='left')
 
-	# zero_label_fw=pd.read_csv("/home/share/ch/移动设计院/data/小区KPI/zero_label_fw3.csv")
+	# zero_label_fw=pd.read_csv("/home/share/data/小区KPI/zero_label_fw3.csv")
 	zero_label_fw=results_fw_zero_df
 	zero_label_fw=zero_label_fw.rename(columns={'timestamp':'开始时间','cell':'小区名称','label':'label_zero'})
 
@@ -175,7 +175,7 @@ def model_detect_pipeline_fw(df_concat_kpi, city, save_out=True):
 	df_concat_kpi_f_jump.lable_model=df_concat_kpi_f_jump.lable_model.str.replace('nan','0')
 	df_concat_kpi_f_jump.label_zero=df_concat_kpi_f_jump.label_zero.fillna('0')
 
-	# df_concat_kpi_f_jump.to_csv('/home/share/ch/移动设计院/data/小区KPI/上行流量_label_{}.csv'.format(city),index=False,encoding='utf_8_sig')
+	# df_concat_kpi_f_jump.to_csv('/home/share/data/小区KPI/上行流量_label_{}.csv'.format(city),index=False,encoding='utf_8_sig')
 	if save_out:
 		table_zero=df_concat_kpi_f_jump[df_concat_kpi_f_jump.label_zero=='零流量'][['小区名称', '所属地市', '开始时间', '上行流量(KByte)','mean_hour', 'std_hour', 'label_zero']]
 		table_zero=table_zero.rename(columns={'label_zero':'零流量','mean_hour':'同期历史均值','std_hour':'同期历史标准差'})
@@ -227,7 +227,7 @@ def model_detect_pipeline_bw(df_concat_kpi,city,save_out=True):
 
 	results_bw = Parallel(n_jobs=-1)(delayed(detect_bw)(name) for name in tqdm(cell_list_bw))
 	model_label_bw=pd.concat(results_bw)
-	# model_label_bw.to_csv('/home/share/ch/移动设计院/data/小区KPI/model_label_bw3.csv',index=False,encoding='utf_8_sig')
+	# model_label_bw.to_csv('/home/share/data/小区KPI/model_label_bw3.csv',index=False,encoding='utf_8_sig')
 
 	df_concat_kpi_b_3=df_concat_kpi_b[df_concat_kpi_b.开始时间>(df_concat_kpi_b.开始时间.max()-datetime.timedelta(days=3))]
 	df_concat_kpi_bw=df_concat_kpi_b_3.pivot_table(index=["小区名称"],columns="开始时间", values="下行流量(KByte)")
@@ -262,7 +262,7 @@ def model_detect_pipeline_bw(df_concat_kpi,city,save_out=True):
 	        return None
 	results_bw_zero = Parallel(n_jobs=-1)(delayed(select_zero_bw)(name) for name in tqdm(df_0label_kpi_bw_T.columns))
 	results_bw_zero_df=pd.concat([re for re in results_bw_zero if re is not None])
-	# results_bw_zero_df.to_csv('/home/share/ch/移动设计院/data/小区KPI/zero_label_bw3.csv',index=False,encoding='utf_8_sig')
+	# results_bw_zero_df.to_csv('/home/share/data/小区KPI/zero_label_bw3.csv',index=False,encoding='utf_8_sig')
 
 	df_concat_kpi_b['weekday'] = df_concat_kpi_b.开始时间.apply(lambda x: x.weekday())
 	df_concat_kpi_b['weekday'] = df_concat_kpi_b['weekday'].apply(lambda x: 0 if x in [1, 2, 3, 4, 0] else 1)
@@ -279,12 +279,12 @@ def model_detect_pipeline_bw(df_concat_kpi,city,save_out=True):
 	df_concat_kpi_b_jump['bw_label']=df_concat_kpi_b_jump.apply(lambda x: three_sigma_bw(x),axis=1)
 	df_concat_kpi_b_jump.to_csv('/home/share/ch/移动设计院/data/小区KPI/下行流量_label_{}.csv'.format(city),index=False,encoding='utf_8_sig')
 
-	# model_label_bw=pd.read_csv('/home/share/ch/移动设计院/data/小区KPI/model_label_bw3.csv')
+	# model_label_bw=pd.read_csv('/home/share/data/小区KPI/model_label_bw3.csv')
 	model_label_bw = model_label_bw.rename(columns={'timestamp':'开始时间', 'cell': '小区名称'})
 	model_label_bw['lable_model'] = 1
 	df_concat_kpi_b_jump=pd.merge(df_concat_kpi_b_jump[['小区名称','所属地市','开始时间','下行流量(KByte)','mean_hour','std_hour','bw_label']].astype(str),model_label_bw[['开始时间', '小区名称', 'lable_model']].astype(str),on=['开始时间', '小区名称'],how='left')
 
-	# zero_label_bw=pd.read_csv("/home/share/ch/移动设计院/data/小区KPI/zero_label_bw3.csv")
+	# zero_label_bw=pd.read_csv("/home/share/data/小区KPI/zero_label_bw3.csv")
 	zero_label_bw=results_bw_zero_df
 
 	zero_label_bw=zero_label_bw.rename(columns={'timestamp':'开始时间','cell':'小区名称','label':'label_zero'})
@@ -292,7 +292,7 @@ def model_detect_pipeline_bw(df_concat_kpi,city,save_out=True):
 	df_concat_kpi_b_jump=pd.merge(df_concat_kpi_b_jump.astype(str),zero_label_bw[['开始时间', '小区名称', 'label_zero']].astype(str),on=['开始时间', '小区名称'],how='left')
 	df_concat_kpi_b_jump.lable_model=df_concat_kpi_b_jump.lable_model.str.replace('nan','0')
 	df_concat_kpi_b_jump.label_zero=df_concat_kpi_b_jump.label_zero.fillna('0')
-	# df_concat_kpi_b_jump.to_csv('/home/share/ch/移动设计院/data/小区KPI/下行流量_label_{}.csv'.format(city),index=False,encoding='utf_8_sig')
+	# df_concat_kpi_b_jump.to_csv('/home/share/data/小区KPI/下行流量_label_{}.csv'.format(city),index=False,encoding='utf_8_sig')
 	
 	if save_out:
 		table_zero=df_concat_kpi_b_jump[df_concat_kpi_b_jump.label_zero=='零流量'][['小区名称', '所属地市', '开始时间', '下行流量(KByte)','mean_hour', 'std_hour', 'label_zero']]
